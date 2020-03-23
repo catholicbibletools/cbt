@@ -1,0 +1,48 @@
+<html>
+<head>
+    <title>CATHOLiC BiBLE TOOLS</title>
+    <style>
+        body {
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <script>
+	function getJson(resource, callback) {
+		var r = new XMLHttpRequest();
+		r.overrideMimeType("application/json");
+		r.open("GET", resource, true);
+		r.onreadystatechange = function() {
+			if (r.readyState === 4 && r.status == "200") {
+				callback(JSON.parse(r.responseText));
+			}
+		}
+		r.send(null);
+    }
+    function appendDiv(content) {
+		var div = document.createElement('div');
+        div.innerHTML = content;
+        document.body.append(div);
+    }
+    function arrayToUl(array) {
+        var lis = "";
+        for (var x in array) {
+            lis += "<li>" + array[x] + "</li>";
+        }
+        return "<ul>" + lis + "</ul>";
+    }
+    getJson("/version", function (reply1) {
+		appendDiv('<h2>Version</h2><h3>' + reply1.content + '</h3>');
+        getJson("/list", function (reply2) {
+		    appendDiv('<h2>Bibles</h2>' + arrayToUl(reply2.content));
+            getJson("/config", function (reply3) {
+                appendDiv('<h2>Configuration</h2>' + arrayToUl(reply3.content));
+            });
+        });
+    });
+    </script>
+    <h1>CBT DEMO</h1>
+    <hr/>
+</body>
+</html>
